@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  # API Gateway
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - JWT_SECRET=your_jwt_secret
+      - AUTH_SERVICE_URL=http://auth-service:4001
+      - RENTAL_SERVICE_URL=http://rental-service:4002
+      - SERVICE_SERVICE_URL=http://service-service:4003
+      - PAYMENT_SERVICE_URL=http://payment-service:4004
+      - MESSAGING_SERVICE_URL=http://messaging-service:4005
+      - NOTIFICATION_SERVICE_URL=http://notification-service:4006
+      - ADMIN_SERVICE_URL=http://admin-service:4007
+      - SEARCH_SERVICE_URL=http://search-service:4008
+    networks:
+      - rental-net
+    depends_on:
+      - auth-service
+      - rental-service
+    restart: unless-stopped
+
+  # Auth Service
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    ports:
+      - "4001:4001"
+    environment:
+      - PORT=4001
+      - JWT_SECRET=your_jwt_secret
+      - MONGODB_URI=mongodb+srv://username:password@cluster0.mongodb.net/rental-auth?retryWrites=true&w=majority
+      - EMAIL_SERVICE=gmail
+      - EMAIL_USER=youremail@gmail.com
+      - EMAIL_PASS=yourpassword
+      - GOOGLE_CLIENT_ID=your_google_client_id
+      - GOOGLE_CLIENT_SECRET=your_google_client_secret
+      - GOOGLE_CALLBACK_URL=http://localhost:3000/api/auth/google/callback
+    networks:
+      - rental-net
+    restart: unless-stopped
+
+  # Rental Service
+  rental-service:
+    build: ./rental-service
+    container_name: rental-service
+    ports:
+      - "4002:4002"
+    environment:
+      - PORT=4002
+      - JWT_SECRET=your_jwt_secret
+      - MONGODB_URI=mongodb+srv://username:password@cluster0.mongodb.net/rental-rentals?retryWrites=true&w=majority
+      - NOTIFICATION_SERVICE_URL=http://notification-service:4006
+      - CLOUDINARY_CLOUD_NAME=your_cloud_name
+      - CLOUDINARY_API_KEY=your_api_key
+      - CLOUDINARY_API_SECRET=your_api_secret
+    networks:
+      - rental-net
+    restart: unless-stopped
+
+networks:
+  rental-net:
+    driver: bridge
