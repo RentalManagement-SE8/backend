@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-RmsApplication<RMS>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "SE2.RMS.RmsApplication",
+            "projectName": "RMS",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
